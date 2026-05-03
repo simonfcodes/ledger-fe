@@ -6,12 +6,7 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Link, useNavigate } from "react-router-dom"
 
-import { AlertCircleIcon } from "lucide-react"
-import {
-    Alert,
-    AlertDescription,
-    AlertTitle
-} from "@/components/ui/alert"
+import FormAlert from "@/components/FormAlert"
 
 const Login: React.FC = () => {
 
@@ -60,7 +55,7 @@ const Login: React.FC = () => {
                                 onChange={(e) => setEmail(e.target.value)} />
                         </Field>
                         <Field>
-                            <FieldLabel htmlFor="input-password">Password</FieldLabel>
+                            <FieldLabel className="pt-2" htmlFor="input-password">Password</FieldLabel>
                             <Input 
                                 id="input-password" 
                                 type="password" 
@@ -68,13 +63,7 @@ const Login: React.FC = () => {
                                 value={password} 
                                 onChange={(e) => setPassword(e.target.value)} />
                         </Field>
-                        {loginError && (
-                            <Alert variant="destructive" className="mt-4">
-                                <AlertCircleIcon className="w-4 h-4" />
-                                <AlertTitle>Login Failed</AlertTitle>
-                                <AlertDescription>{loginError}</AlertDescription>
-                            </Alert>
-                        )}
+                        {loginError && <FormAlert title="Login Failed" description={loginError} type="error" />}
                         <Button type="submit" className="w-full mt-4">Sign In</Button>
                         <h3 className="text-center mt-4">Don't have an account? <Link to="/register" className="text-blue-500">Register</Link></h3>
                     </form>

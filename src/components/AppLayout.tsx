@@ -26,6 +26,9 @@ const AppLayout: React.FC = () => {
                 <div id="secondary-links" className="mt-auto">
                     <ul>
                         <li>
+                            <NavLink className={navLinkClass} to="/profile-setup">Profile Setup</NavLink>
+                        </li>
+                        <li>
                             <NavLink className={navLinkClass} to="/settings">Settings</NavLink>
                         </li>
                         <li>

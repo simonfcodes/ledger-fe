@@ -8,12 +8,7 @@ import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { Navigate } from "react-router-dom"
-
-import {
-    Alert,
-    AlertDescription,
-    AlertTitle
-} from "@/components/ui/alert"
+import FormAlert from "@/components/FormAlert"
 
 
 const MfaChallenge: React.FC = () => {
@@ -87,12 +82,7 @@ const MfaChallenge: React.FC = () => {
                         <FieldLabel 
                             htmlFor="checkbox-trust-device">Trust this device for 30 days</FieldLabel>
                     </Field>
-                    {mfaError && (
-                        <Alert variant="destructive" className="mt-4">
-                            <AlertTitle>Error</AlertTitle>
-                            <AlertDescription>{mfaError}</AlertDescription>
-                        </Alert>
-                    )}
+                    {mfaError && <FormAlert title="MFA Error" description={mfaError} type="error" />}
                     <Button type="submit" className="w-full mt-4">Submit MFA Code</Button>
                     <h3 className="text-center mt-4">Can't access MFA? <Link to="/mfa-backup" className="text-blue-500">Use a backup code instead.</Link></h3>
                 </form>
