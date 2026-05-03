@@ -24,7 +24,7 @@ const Login: React.FC = () => {
 
     const navigate = useNavigate()
 
-    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleLogin = async (event: React.SubmitEvent<HTMLFormElement>) => {
         event.preventDefault()
         setLoginError(null)
         if (!email || !password) {
