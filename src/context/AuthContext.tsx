@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import api from "@/services/api"
+import api, { refreshApi, setOnTokenRefreshed } from "@/services/api"
 import { setAuthToken } from "@/services/api";
 import type { AxiosResponse } from "axios";
 import type { LoginResponse, LoginResult } from "@/types/auth";
@@ -10,6 +10,7 @@ interface AuthContextType {
     accessToken: string | null
     mfaToken: string | null
     isAuthenticated: boolean
+    isLoading: boolean
     login: (email: string, password: string) => Promise<LoginResult>
     verifyMfa: (code: string, trustDevice: boolean) => Promise<LoginResult>
     logout: () => void
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
     accessToken: null,
     mfaToken: null,
     isAuthenticated: false,
+    isLoading: true,
     login: async () => ({ status: "success" }),
     verifyMfa: async () => ({ status: "success" }),
     logout: () => {}
@@ -28,6 +30,28 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [accessToken, setAccessToken] = useState<string | null>(null)
     const [mfaToken, setMfaToken] = useState<string | null>(null)
     const isAuthenticated = !!accessToken
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+            setOnTokenRefreshed((newToken: string) => {
+                setAccessToken(newToken)
+        })
+        return () => setOnTokenRefreshed(null) // cleanup
+    }, [])
+
+    useEffect(() => {
+        const tryRefresh = async () => {
+            try {
+                const response: AxiosResponse<LoginResponse> = await refreshApi.post("/auth/refresh")
+                setAccessToken(response.data.access_token)
+            } catch (error) {
+                console.error("Token refresh failed:", error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        tryRefresh()
+    }, [])
 
     const login = async (email: string, password: string): Promise<LoginResult> => {
         try {
@@ -63,7 +87,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
-    const logout = (): void => {
+    const logout = async (): Promise<void> => {
+        await api.post("/auth/logout")
         setAccessToken(null)
         setMfaToken(null)
     }
@@ -72,9 +97,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setAuthToken(accessToken)
     }, [accessToken])
 
-    console.log("AuthProvider render:", { accessToken, mfaToken, isAuthenticated })
+    console.log("AuthProvider render:", { accessToken, mfaToken, isAuthenticated, isLoading })
     return (
-        <AuthContext.Provider value={{ accessToken, mfaToken, isAuthenticated, login, verifyMfa, logout }}>
+        <AuthContext.Provider value={{ accessToken, mfaToken, isAuthenticated, isLoading, login, verifyMfa, logout }}>
             {children}
         </AuthContext.Provider>
     )

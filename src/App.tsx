@@ -31,7 +31,7 @@ function App() {
                                 <Route path="/accounts" element={<Accounts />} />
                                 <Route path="/transactions" element={<Transactions />} />
                                 <Route path="/categories" element={<Categories />} />
-                                <Route path="/settings" element={<Settings />} />                            
+                                <Route path="/settings" element={<Settings />} />                                 
                             </Route>
                         </Route>
                         <Route element={<GuestRoute />}>

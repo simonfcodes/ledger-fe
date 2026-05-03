@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 
 import { CircleCheck, CircleX } from "lucide-react"
-import { registerUser } from "@/services/authServices"
+import { registerUser } from "@/services/authService"
 import { useNavigate, Link } from "react-router-dom"
 import FormAlert from "@/components/FormAlert"
 
