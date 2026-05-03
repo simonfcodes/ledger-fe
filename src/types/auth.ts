@@ -1,3 +1,5 @@
+import type { UUID } from "./common"
+
 interface LoginResponse {
     access_token: string
     token_type: string
@@ -21,4 +23,9 @@ type LoginResult =
     | { status: "success" }
     | { status: "mfa_required", mfa_setup_required: boolean}
 
-export type { LoginResponse, MfaChallengeResponse, MfaConfirmResponse, LoginResult }
+interface RegisterResponse {
+    id: UUID
+    email: string
+}
+
+export type { LoginResponse, MfaChallengeResponse, MfaConfirmResponse, LoginResult, RegisterResponse }

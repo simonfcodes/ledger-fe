@@ -11,6 +11,7 @@ interface AuthContextType {
     mfaToken: string | null
     isAuthenticated: boolean
     login: (email: string, password: string) => Promise<LoginResult>
+    verifyMfa: (code: string, trustDevice: boolean) => Promise<LoginResult>
     logout: () => void
 }
 
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
     mfaToken: null,
     isAuthenticated: false,
     login: async () => ({ status: "success" }),
+    verifyMfa: async () => ({ status: "success" }),
     logout: () => {}
 })
 
@@ -43,6 +45,24 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
+    const verifyMfa = async (code: string, trustDevice: boolean): Promise<LoginResult> => {
+        if (!mfaToken) {
+            throw new Error("MFA token is missing")
+        }
+        try {
+            const response: AxiosResponse<LoginResponse> = await api.post(
+                "/auth/mfa/verify",
+                { mfa_token: mfaToken, otp: code, trust_device: trustDevice }
+            )
+            setAccessToken(response.data.access_token)
+            setMfaToken(null)
+            return { status: "success" }
+        } catch (error) {
+            console.error("MFA verification failed:", error)
+            throw error
+        }
+    }
+
     const logout = (): void => {
         setAccessToken(null)
         setMfaToken(null)
@@ -52,8 +72,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setAuthToken(accessToken)
     }, [accessToken])
 
+    console.log("AuthProvider render:", { accessToken, mfaToken, isAuthenticated })
     return (
-        <AuthContext.Provider value={{ accessToken, mfaToken, isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ accessToken, mfaToken, isAuthenticated, login, verifyMfa, logout }}>
             {children}
         </AuthContext.Provider>
     )
