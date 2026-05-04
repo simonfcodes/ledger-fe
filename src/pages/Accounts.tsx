@@ -3,11 +3,13 @@ import { Spinner } from "@/components/ui/spinner"
 import { useAccounts } from "@/hooks/useAccounts"
 import { getErrorMessage } from "@/lib/errorUtils"
 import { Button } from "@/components/ui/button"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { formatBalance } from "@/lib/accountUtils"
 import { Plus } from "lucide-react"
 import type { AccountView } from "@/types/account"
 import AccountRow from "@/components/accounts/AccountRow"
+import type { SheetState } from "@/types/account"
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 
 const sortAccounts = (accounts: AccountView[]): AccountView[] => {
     return [...accounts].sort((a, b) => {
@@ -17,8 +19,14 @@ const sortAccounts = (accounts: AccountView[]): AccountView[] => {
     })
 }
 
+
+
+
 const Accounts: React.FC = () => {
     const { data: accounts, isLoading, error } = useAccounts()
+    const [acctSheetStatus, setAcctSheetStatus] = useState<SheetState>({
+    open: false
+})
     
     const { totalBalance, activeCount } = useMemo(() => {
         if (!accounts) return { totalBalance: 0, activeCount: 0 }
@@ -33,6 +41,10 @@ const Accounts: React.FC = () => {
         if (!accounts) return []
         return sortAccounts(accounts)
     }, [accounts])
+
+    const handleAddAccountModalOpen = () => {
+        setAcctSheetStatus({ open: true, mode: 'CREATE' })
+    }
         
     if (isLoading) {
         return ( 
@@ -55,7 +67,8 @@ const Accounts: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-xl font-semibold">Accounts</h1>
-                <Button>
+                <Button
+                    onClick={handleAddAccountModalOpen}>
                     <Plus className="h-4 w-4 mr-1" />
                     Add account
                 </Button>
@@ -83,6 +96,27 @@ const Accounts: React.FC = () => {
                     </div>
                 )}
             </div>
+            <Sheet
+                open={acctSheetStatus.open}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) {
+                        setAcctSheetStatus({open: false})
+                    }
+                }}>
+                <SheetContent>
+                    <SheetHeader>
+                        <SheetTitle>Test</SheetTitle>
+                        <SheetDescription>Test 2</SheetDescription>                        
+                    </SheetHeader>
+                    <div className="grid flex-1 auto-rows-min gap-6 px-4">
+                        <p>This is a test</p>
+                    </div>
+                    <SheetFooter>
+                        <Button type="submit">Save changes</Button>
+                    </SheetFooter>
+                </SheetContent>
+
+            </Sheet>
         </main>
     )
 }

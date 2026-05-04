@@ -130,3 +130,8 @@ interface UpdateSavingsAccountRequest extends BaseUpdateAccountRequest {
 }
 
 export type UpdateAccountRequest = UpdateCurrentAccountRequest | UpdateLoanAccountRequest | UpdateCreditCardAccountRequest | UpdateSavingsAccountRequest
+
+export type SheetState = 
+  | { open: false }
+  | { open: true; mode: 'CREATE' }
+  | { open: true; mode: 'EDIT'; accountId: UUID }
